@@ -36,6 +36,7 @@ struct CRTP_Helper
 };
 }  // namespace detail
 
+/// @brief Trait that allows addition operations on the strong type.
 template <typename StrongType>
 struct Addable : detail::CRTP_Helper<StrongType, Addable<StrongType>>
 {
@@ -51,6 +52,7 @@ struct Addable : detail::CRTP_Helper<StrongType, Addable<StrongType>>
   }
 };
 
+/// @brief Trait that allows subtraction operations on the strong type.
 template <typename StrongType>
 struct Subtractable : detail::CRTP_Helper<StrongType, Subtractable<StrongType>>
 {
@@ -66,6 +68,7 @@ struct Subtractable : detail::CRTP_Helper<StrongType, Subtractable<StrongType>>
   }
 };
 
+/// @brief Trait that allows multiplication operations on the strong type.
 template <typename StrongType>
 struct Multiplyable : detail::CRTP_Helper<StrongType, Multiplyable<StrongType>>
 {
@@ -81,6 +84,7 @@ struct Multiplyable : detail::CRTP_Helper<StrongType, Multiplyable<StrongType>>
   }
 };
 
+/// @brief Trait that allows division operations on the strong type.
 template <typename StrongType>
 struct Divisible : detail::CRTP_Helper<StrongType, Divisible<StrongType>>
 {
@@ -96,6 +100,8 @@ struct Divisible : detail::CRTP_Helper<StrongType, Divisible<StrongType>>
   }
 };
 
+/// @brief Composite trait that grants all arithmetic operations to the strong
+/// type.
 template <typename StrongType>
 struct Arithmetic : Multiplyable<StrongType>,
                     Divisible<StrongType>,
@@ -104,6 +110,7 @@ struct Arithmetic : Multiplyable<StrongType>,
 {
 };
 
+/// @brief Trait that allows increment operations on the strong type.
 template <typename StrongType>
 struct Incrementable
     : detail::CRTP_Helper<StrongType, Incrementable<StrongType>>
@@ -122,6 +129,7 @@ struct Incrementable
   }
 };
 
+/// @brief Trait that allows decrement operations on the strong type.
 template <typename StrongType>
 struct Decrementable
     : detail::CRTP_Helper<StrongType, Decrementable<StrongType>>
@@ -140,6 +148,7 @@ struct Decrementable
   }
 };
 
+/// @brief Trait that allows ordering comparisons of the strong type.
 template <typename StrongType>
 struct Orderable : detail::CRTP_Helper<StrongType, Orderable<StrongType>>
 {
@@ -161,16 +170,29 @@ struct Orderable : detail::CRTP_Helper<StrongType, Orderable<StrongType>>
   }
 };
 
+/// @brief Trait that allows default construction of the strong type. Without
+/// this trait specified, all instances of the type must be constructed with an
+/// explicit value.
 template <typename StrongType>
 struct DefaultConstructible
 {
 };
 
+/// @brief Trait that allows uninitialized default construction of the strong
+/// type. This may be useful for large objects where default initialization
+/// would be cost prohibitive.
 template <typename StrongType>
 struct UninitializedConstructible
 {
 };
 
+/// @brief A strong type wrapper that creates a distinct type from an underlying
+/// type T, and has optionally specified traits.
+/// @tparam T The underlying type to be wrapped.
+/// @tparam Tag A unique tag type to differentiate this strong type from others
+/// with the same underlying type. This typically can just be an empty struct.
+/// @tparam Traits A variadic list of trait templates to be applied to the
+/// strong type
 template <typename T, typename Tag, template <typename> class... Traits>
 class strong_type : public Traits<strong_type<T, Tag, Traits...>>...
 {
@@ -199,17 +221,26 @@ class strong_type : public Traits<strong_type<T, Tag, Traits...>>...
 
   constexpr explicit strong_type(const T& value) : _value(value) {}
   constexpr explicit strong_type(T&& value) : _value(std::move(value)) {}
+
+  /// @brief Access the underlying value as a weak type
   RG_NODISCARD RG_CONSTEXPR_MUTABLE T& value() { return _value; }
+
+  /// @brief Access the underlying value as a weak type
   RG_NODISCARD constexpr const T& value() const { return _value; }
 
+  /// @brief Equality operator
   RG_NODISCARD constexpr bool operator==(const strong_type& other) const
   {
     return _value == other._value;
   }
+
+  /// @brief Inequality operator
   RG_NODISCARD constexpr bool operator!=(const strong_type& other) const
   {
     return !(_value == other._value);
   }
+
+  /// @brief Hash function for the underlying type
   RG_NODISCARD constexpr std::size_t hash() const
   {
     return std::hash<T>{}(_value);
