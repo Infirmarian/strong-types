@@ -41,3 +41,6 @@ a++; // No Incrementable trait
 a + b; // No Addable trait
 User c; // No DefaultConstructible trait
 ```
+
+For more examples and the process of building out this library, check out my blog post
+[Strong Types](https://hotpath.substack.com/p/strong-types)
