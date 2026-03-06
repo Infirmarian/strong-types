@@ -19,84 +19,75 @@
 
 namespace rg
 {
-namespace detail
-{
-template <typename StrongType, typename Trait>
-struct CRTP_Helper
-{
- public:
-  constexpr const StrongType& derived() const
-  {
-    return static_cast<const StrongType&>(*this);
-  }
-  RG_CONSTEXPR_MUTABLE StrongType& derived()
-  {
-    return static_cast<StrongType&>(*this);
-  }
-};
-}  // namespace detail
-
 /// @brief Trait that allows addition operations on the strong type.
 template <typename StrongType>
-struct Addable : detail::CRTP_Helper<StrongType, Addable<StrongType>>
+struct Addable
 {
-  RG_NODISCARD constexpr StrongType operator+(const StrongType& other) const
+  RG_NODISCARD friend constexpr StrongType operator+(const StrongType& lhs,
+                                                     const StrongType& rhs)
   {
-    return StrongType{this->derived().value() + other.value()};
+    return StrongType{lhs.value() + rhs.value()};
   }
 
   RG_CONSTEXPR_MUTABLE StrongType& operator+=(const StrongType& other)
   {
-    this->derived().value() += other.value();
-    return this->derived();
+    auto& self = static_cast<StrongType&>(*this);
+    self.value() += other.value();
+    return self;
   }
 };
 
 /// @brief Trait that allows subtraction operations on the strong type.
 template <typename StrongType>
-struct Subtractable : detail::CRTP_Helper<StrongType, Subtractable<StrongType>>
+struct Subtractable
 {
-  RG_NODISCARD constexpr StrongType operator-(const StrongType& other) const
+  RG_NODISCARD friend constexpr StrongType operator-(const StrongType& lhs,
+                                                     const StrongType& rhs)
   {
-    return StrongType{this->derived().value() - other.value()};
+    return StrongType{lhs.value() - rhs.value()};
   }
 
   RG_CONSTEXPR_MUTABLE StrongType& operator-=(const StrongType& other)
   {
-    this->derived().value() -= other.value();
-    return this->derived();
+    auto& self = static_cast<StrongType&>(*this);
+    self.value() -= other.value();
+    return self;
   }
 };
 
 /// @brief Trait that allows multiplication operations on the strong type.
 template <typename StrongType>
-struct Multiplyable : detail::CRTP_Helper<StrongType, Multiplyable<StrongType>>
+struct Multiplyable
 {
-  RG_NODISCARD constexpr StrongType operator*(const StrongType& other) const
+  RG_NODISCARD friend constexpr StrongType operator*(const StrongType& lhs,
+                                                     const StrongType& rhs)
   {
-    return StrongType{this->derived().value() * other.value()};
+    return StrongType{lhs.value() * rhs.value()};
   }
 
   RG_CONSTEXPR_MUTABLE StrongType& operator*=(const StrongType& other)
   {
-    this->derived().value() *= other.value();
-    return this->derived();
+    auto& self = static_cast<StrongType&>(*this);
+    self.value() *= other.value();
+    return self;
   }
 };
 
 /// @brief Trait that allows division operations on the strong type.
 template <typename StrongType>
-struct Divisible : detail::CRTP_Helper<StrongType, Divisible<StrongType>>
+struct Divisible
 {
-  RG_NODISCARD constexpr StrongType operator/(const StrongType& other) const
+  RG_NODISCARD friend constexpr StrongType operator/(const StrongType& lhs,
+                                                     const StrongType& rhs)
   {
-    return StrongType{this->derived().value() / other.value()};
+    return StrongType{lhs.value() / rhs.value()};
   }
 
   RG_CONSTEXPR_MUTABLE StrongType& operator/=(const StrongType& other)
   {
-    this->derived().value() /= other.value();
-    return this->derived();
+    auto& self = static_cast<StrongType&>(*this);
+    self.value() /= other.value();
+    return self;
   }
 };
 
@@ -113,60 +104,66 @@ struct Arithmetic : Multiplyable<StrongType>,
 /// @brief Trait that allows increment operations on the strong type.
 template <typename StrongType>
 struct Incrementable
-    : detail::CRTP_Helper<StrongType, Incrementable<StrongType>>
 {
   RG_CONSTEXPR_MUTABLE StrongType operator++(int)
   {
-    StrongType temp = this->derived();
-    this->derived().value()++;
+    auto& self = static_cast<StrongType&>(*this);
+    auto temp = self;
+    self.value()++;
     return temp;
   }
 
   RG_CONSTEXPR_MUTABLE StrongType& operator++()
   {
-    ++this->derived().value();
-    return this->derived();
+    auto& self = static_cast<StrongType&>(*this);
+    ++self.value();
+    return self;
   }
 };
 
 /// @brief Trait that allows decrement operations on the strong type.
 template <typename StrongType>
 struct Decrementable
-    : detail::CRTP_Helper<StrongType, Decrementable<StrongType>>
 {
   RG_CONSTEXPR_MUTABLE StrongType operator--(int)
   {
-    StrongType temp = this->derived();
-    this->derived().value()--;
+    auto& self = static_cast<StrongType&>(*this);
+    auto temp = self;
+    self.value()--;
     return temp;
   }
 
   RG_CONSTEXPR_MUTABLE StrongType& operator--()
   {
-    --this->derived().value();
-    return this->derived();
+    auto& self = static_cast<StrongType&>(*this);
+    --self.value();
+    return self;
   }
 };
 
 /// @brief Trait that allows ordering comparisons of the strong type.
 template <typename StrongType>
-struct Orderable : detail::CRTP_Helper<StrongType, Orderable<StrongType>>
+struct Orderable
 {
-  RG_NODISCARD constexpr bool operator<(const StrongType& other) const
+  RG_NODISCARD friend constexpr bool operator<(const StrongType& lhs,
+                                               const StrongType& rhs)
   {
-    return this->derived().value() < other.value();
+    return lhs.value() < rhs.value();
   }
-  RG_NODISCARD constexpr bool operator>(const StrongType& other) const
+  RG_NODISCARD friend constexpr bool operator>(const StrongType& lhs,
+                                               const StrongType& rhs)
   {
-    return this->derived().value() > other.value();
+    return lhs.value() > rhs.value();
   }
-  RG_NODISCARD constexpr bool operator<=(const StrongType& other) const
+  RG_NODISCARD friend constexpr bool operator<=(const StrongType& lhs,
+                                                const StrongType& rhs)
   {
-    return this->derived().value() <= other.value();
+    return lhs.value() <= rhs.value();
   }
-  RG_NODISCARD constexpr bool operator>=(const StrongType& other) const
+  RG_NODISCARD friend constexpr bool operator>=(const StrongType& lhs,
+                                                const StrongType& rhs)
   {
-    return this->derived().value() >= other.value();
+    return lhs.value() >= rhs.value();
   }
 };
 

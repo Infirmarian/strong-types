@@ -8,6 +8,10 @@ C++ is lacking in a built-in strong type system to easily create strong types. W
 
 This is a single header library, so just copy `include/strong_type.hpp` into your project. The CMake setup here is purely for running tests.
 
+#### Support
+
+This library is built and tested against C++11, 14, 17 and 20. It builds with -Wall, -Wextra and -Wpedantic
+
 #### Examples
 
 For the most basic example, simply include the header, define the strong type and use in code. This example includes no traits. By default, strong types can only be constructed, compared for equality/inequality and hashed.
