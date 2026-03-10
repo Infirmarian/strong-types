@@ -9,7 +9,7 @@ foreach(STD IN ITEMS 11 14 17 20)
 
     add_executable(${TARGET})
     set_property(TARGET ${TARGET} PROPERTY CXX_STANDARD ${STD})
-    target_sources(${TARGET} PRIVATE test/strong_types_tests.cpp)
+    target_sources(${TARGET} PRIVATE test/strong_types_tests.cpp test/dimension_tests.cpp)
     target_include_directories(${TARGET} PRIVATE ${CMAKE_SOURCE_DIR}/include)
     target_compile_options(${TARGET} PRIVATE
         -Wall
